@@ -11,14 +11,15 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { ShieldAlert } from 'lucide-react';
-import useRegister from '@/hooks/useRegister';
-import useDebounce from '@/hooks/useDebounce';
 import { toast } from 'sonner';
 import Link from 'next/link';
 
+
+
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const { register, loading, error } = useRegister();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const RegisterSchema = z.object({
     username: z
@@ -28,7 +29,7 @@ const RegisterPage = () => {
       .min(3, {
         message: 'Username must be at least 3 characters',
       }),
-    email: z
+    usermail: z
       .string({
         required_error: 'e-mail is required',
       })
@@ -48,55 +49,62 @@ const RegisterPage = () => {
     resolver: zodResolver(RegisterSchema),
   });
 
-  const debouncedEmail = useDebounce(form.watch('email'), 100);
 
-  useEffect(() => {
-    if (debouncedEmail) {
-      if (
-        !/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(
-          debouncedEmail
-        )
-      ) {
-        form.setError('email', {
-          type: 'manual',
-          message: 'Please enter a valid email address',
-        });
-        return;
-      }
+
+ 
+
+//create onSubm,it function using fetchapi for this api 'api/register'
+const onsubmit = async (data: z.infer<typeof RegisterSchema>) => {
+  setLoading(true);
+  setError(null);
+  console.log(data)
+  try {
+    console.log(data)
+    const response = await fetch('/api/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: data.username,
+        usermail: data.usermail,
+        password: data.password,
+      }), // Ensure data contains usermail
+    });
+
+    if (response.ok) {
+      toast.success('Registered Successfully.');
+      router.push('/login');
     } else {
-      form.clearErrors('email');
+      const error = await response.json();
+      setError(error.errorMessage);
     }
-  }, [debouncedEmail, form]);
+  } catch (error) {
+    setError('Something went wrong!');
+  } finally {
+    setLoading(false);
+  }
+}
 
-  const onSubmit = async (data: z.infer<typeof RegisterSchema>) => {
-    const response = await register(data.email, data.username, data.password);
 
-    if (response?.status) {
-      toast.success('Registration successful! Redirecting to login...');
-      router.push('/login'); // Redirect to login page after successful registration
-    } else {
-      toast.error(response?.errorMessage || 'Registration failed');
-    }
-  };
 
   return (
     <div className="w-full place-items-center bg-gradient-to-b from-white to-[#AFA3FF] h-screen">
       <div className="flex items-center justify-center h-full">
         <Card className="w-[648px] h-[556px] justify-center bg-white outline-none border-none p-[60px] rounded-2xl ring-1 ring-white/10 shadow-xl">
           <CardHeader className="text-center">
-          <CardTitle className="font-semibold text-black text-xl w-full text-[48px]">
+            <CardTitle className="font-semibold text-black text-xl w-full text-[48px]">
               Welcome to
               <span className='text-[#4B36CC]'> Workflo!</span>
             </CardTitle>
           </CardHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
+            <form onSubmit={form.handleSubmit(onsubmit)}>
               <CardContent className="px-10 pt-[30px]">
                 <div className="w-full flex flex-col gap-y-[12px]">
-
-                <FormField
+                  <FormField
                     control={form.control}
-                    name="email"
+                    name="usermail"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-[#89929B] text-xs sr-only">
@@ -121,7 +129,6 @@ const RegisterPage = () => {
                     name="username"
                     render={({ field }) => (
                       <FormItem>
-                        
                         <FormControl className="focus-within:border-1">
                           <div className="flex bg-[#EBEBEB] justify-start items-center rounded-lg">
                             <input
@@ -136,7 +143,6 @@ const RegisterPage = () => {
                       </FormItem>
                     )}
                   />
-                
                   <FormField
                     control={form.control}
                     name="password"
@@ -195,7 +201,6 @@ const RegisterPage = () => {
                   <p>
                     Already have an account? <span className="mr-1 text-[#0054A1]"><Link href='/login'>Login in</Link></span>
                   </p>
-                
                 </div>
               </CardFooter>
             </form>

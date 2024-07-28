@@ -7,7 +7,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { z } from 'zod';
 import Image from 'next/image';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import useLogin from '@/hooks/useLogin';
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Label } from '@/components/ui/label';
 import { ShieldAlert } from 'lucide-react';
@@ -21,7 +20,9 @@ import Link from 'next/link';
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const { login, loading, error } = useLogin();
+ 
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const dispatch = useDispatch();
   const router = useRouter();
   const isLoggedIn = useSelector((state: IStoreState) => state.app.isLoggedIn);
@@ -77,20 +78,44 @@ const LoginPage = () => {
   }, [isLoggedIn, router]);
 
   const onSubmit = async (data: z.infer<typeof LoginSchema>) => {
-    const response = await login(data.usermail, data.password);
+    setLoading(true);
+    setError(null);
+    console.log(data);
+    
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          usermail: data.usermail,
+          password: data.password,
+        }),
+      });
   
-    if (response?.status) {
-      dispatch(appActions.login({
-        accessToken: response.token || '',
-        usermail: data.usermail,
-        role: 'USER', // Adjust role if necessary
-      }));
-      router.push('/');
-    } else {
-      toast.error(response?.errorMessage || 'Login failed');
+      if (response.ok) {
+        const result = await response.json();
+        dispatch(appActions.login({
+          accessToken: result.token || '',
+          usermail: data.usermail,
+          role: 'USER', // Adjust role if necessary
+        }));
+        router.push('/');
+        toast.success('Login Successful.');
+      } else {
+        const error = await response.json();
+        setError(error.errorMessage);
+        toast.error(error.errorMessage || 'Login failed');
+      }
+    } catch (error) {
+      setError('Something went wrong!');
+      toast.error('Something went wrong!');
+    } finally {
+      setLoading(false);
     }
   };
-
+  
   return (
     <div className="w-full place-items-center bg-gradient-to-b from-white to-[#AFA3FF] h-screen">
       <div className="flex items-center justify-center h-full">
