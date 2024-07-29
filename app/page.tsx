@@ -12,7 +12,7 @@ export default function Home() {
   if (!isLoggedIn) {
     router.push('/login');
   } else {
-    router.push('/course');
+    router.push('/dashboard');
   }
   return (
     <div className="grid place-content-center h-screen">
