@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import {  useState } from 'react';
 import { z } from 'zod';
 import Image from 'next/image';
 import { useForm } from 'react-hook-form';
@@ -11,16 +11,14 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { ShieldAlert } from 'lucide-react';
-import { toast } from 'sonner';
 import Link from 'next/link';
+import useRegister from '@/hooks/useRegister';
 
 
 
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+
   const RegisterSchema = z.object({
     username: z
       .string({
@@ -54,39 +52,7 @@ const RegisterPage = () => {
  
 
 //create onSubm,it function using fetchapi for this api 'api/register'
-const onsubmit = async (data: z.infer<typeof RegisterSchema>) => {
-  setLoading(true);
-  setError(null);
-  console.log(data)
-  try {
-    console.log(data)
-    const response = await fetch('/api/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        username: data.username,
-        usermail: data.usermail,
-        password: data.password,
-      }), // Ensure data contains usermail
-    });
-
-    if (response.ok) {
-      toast.success('Registered Successfully.');
-      router.push('/login');
-    } else {
-      const error = await response.json();
-      setError(error.errorMessage);
-    }
-  } catch (error) {
-    setError('Something went wrong!');
-  } finally {
-    setLoading(false);
-  }
-}
-
-
+const { onSubmit, loading, error } = useRegister();
 
   return (
     <div className="w-full place-items-center bg-gradient-to-b from-white to-[#AFA3FF] h-screen">
@@ -99,7 +65,7 @@ const onsubmit = async (data: z.infer<typeof RegisterSchema>) => {
             </CardTitle>
           </CardHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onsubmit)}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
               <CardContent className="px-10 pt-[30px]">
                 <div className="w-full flex flex-col gap-y-[12px]">
                   <FormField

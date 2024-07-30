@@ -17,12 +17,10 @@ import useDebounce from '@/hooks/useDebounce';
 import { Button } from '@/components/ui/button';
 import { IStoreState } from '../store/store';
 import Link from 'next/link';
+import useLogin from '@/hooks/useLogin';
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
- 
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
   const dispatch = useDispatch();
   const router = useRouter();
   const isLoggedIn = useSelector((state: IStoreState) => state.app.isLoggedIn);
@@ -77,45 +75,7 @@ const LoginPage = () => {
     }
   }, [isLoggedIn, router]);
 
-  const onSubmit = async (data: z.infer<typeof LoginSchema>) => {
-    setLoading(true);
-    setError(null);
-    console.log(data);
-    
-    try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          usermail: data.usermail,
-          password: data.password,
-        }),
-      });
-  
-      if (response.ok) {
-        const result = await response.json();
-        dispatch(appActions.login({
-          accessToken: result.token || '',
-          usermail: data.usermail,
-          role: 'USER', // Adjust role if necessary
-        }));
-        router.push('/');
-        toast.success('Login Successful.');
-      } else {
-        const error = await response.json();
-        setError(error.errorMessage);
-        toast.error(error.errorMessage || 'Login failed');
-      }
-    } catch (error) {
-      setError('Something went wrong!');
-      toast.error('Something went wrong!');
-    } finally {
-      setLoading(false);
-    }
-  };
-  
+  const { onSubmit, loading, error } = useLogin();
   return (
     <div className="w-full place-items-center bg-gradient-to-b from-white to-[#AFA3FF] h-screen">
       <div className="flex items-center justify-center h-full">

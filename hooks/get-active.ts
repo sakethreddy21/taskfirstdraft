@@ -1,4 +1,4 @@
-'use client';
+
 import { useQuery } from '@tanstack/react-query';
 import useAuthorizedHttp from '@/hooks/use-authorized-http';
 import { useDispatch } from 'react-redux';

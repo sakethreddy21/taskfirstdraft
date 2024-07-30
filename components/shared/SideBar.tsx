@@ -54,19 +54,13 @@ const SideBar = () => {
     },
   ];
 
-  const SECONARY_LINKS = [
-    {
-      href: '/support',
-      name: 'Ask AI',
-      icon: <InfoIcon className="h-5 w-5" />,
-    },
-  ];
+ 
 
   return (
     <div
       className={`flex h-screen w-full   flex-col overflow-hidden bg-[#ffffff] text-black
       transition-all duration-300 ease-in-out  ${open ? 'max-w-[200px]' : 'max-w-[70px]'
-        } border-r`}
+        } `}
     >
       <div className="flex items-center justify-between border-gray-800 p-2.5 mt-2 max-h-[73px]">
         <Link className="flex items-center transition-all" href="#">
@@ -75,11 +69,12 @@ const SideBar = () => {
 
           ) : (
             <Image
-              src={'/shared/brandlogo.png'}
+              src="https://github.com/shadcn.png"
               onClick={() => setOpen(!open)}
               alt="logo"
               width={40}
               height={40}
+              className='rounded-full'
             />
           )}
         </Link>
@@ -91,7 +86,7 @@ const SideBar = () => {
           <Link
             href={link.href}
             key={index}
-            className={`transition-colors hover:bg-[#F4F4F4] mx-2  flex flex-row items-center cursor-pointer rounded-md  h-50 text-xs p-2 ${pathname.includes(link.href) ? activeLink : inactive
+            className={`transition-colors hover:bg-[#F4F4F4] mx-2  m-2  flex flex-row items-center cursor-pointer rounded-md  h-50 text-xs p-2 ${pathname.includes(link.href) ? activeLink : inactive
               }`}
           >
             {link.icon}
@@ -103,13 +98,19 @@ const SideBar = () => {
           </Link>
         ))}
         </div>
-        <div className='p-2'>  
+        {open ?( <div className='p-2'>  
           <Button className="flex flex-row items-center justify-center cursor-pointer rounded-md custom-gradient  text-xs p-[10px] ">
         <span className=" font-normal text-white text-[20px] w-full text-center">
         Create new task 
       </span>
       <CirclePlus className="mt-1" size={26} fill='#FFFFFF' color='#2F2188 '/>
-      </Button></div>
+      </Button></div>):(
+        <Button>
+          <CirclePlus className="mt-1" size={26} fill='#FFFFFF' color='#2F2188 '/>
+        </Button>
+         
+      )}
+       
       
       </nav>
      

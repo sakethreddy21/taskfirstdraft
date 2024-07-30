@@ -8,6 +8,7 @@ export default function Home() {
   const router = useRouter();
 
   const isLoggedIn = useSelector((state: IStoreState) => state.app.isLoggedIn);
+  console.log(isLoggedIn)
 
   if (!isLoggedIn) {
     router.push('/login');
