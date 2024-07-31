@@ -1,6 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Column, Id, Task } from "../../types";
+import { Column, Id, Task } from "@/types";
 import ColumnContainer from "./ColumnContainer";
 import {
   DndContext,
@@ -12,8 +12,8 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { SortableContext, arrayMove } from "@dnd-kit/sortable";
-import TaskCard from "./TaskCard";
+import { arrayMove } from "@dnd-kit/sortable";
+import TaskCard from "@/components/shared/TaskCard";
 
 const initialColumns: Column[] = [
   { id: 1, title: "Todo" },
@@ -101,11 +101,14 @@ function KanbanBoard() {
   const [columns, setColumns] = useState<Column[]>(initialColumns);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
-
-  // Generate a random number of between 0 and 10000
+  const [isClient, setIsClient] = useState(false);
+  // Generate a random number between 0 and 10000
   function generateId() {
     return Math.floor(Math.random() * 10001);
   }
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Delete column
   function deleteColumn(id: Id) {
@@ -129,13 +132,13 @@ function KanbanBoard() {
   // Create Task
   function createTask(columnId: Id) {
     const newTask: Task = {
-        id: generateId(),
-        columnId,
-        content: `Task ${tasks.length + 1}`,
-        description: "",
-        status: "",
-        deadline: "",
-        timepassed: ""
+      id: generateId(),
+      columnId,
+      content: `Task ${tasks.length + 1}`,
+      description: "",
+      status: "",
+      deadline: "",
+      timepassed: ""
     };
 
     setTasks([...tasks, newTask]);
@@ -258,15 +261,25 @@ function KanbanBoard() {
     })
   );
 
+  // Effect to log task updates
+  useEffect(() => {
+    console.log("Tasks updated:", tasks);
+  }, [tasks]); // Dependency array ensures this runs when `tasks` changes
+
+  // Effect to log column updates
+  useEffect(() => {
+    console.log("Columns updated:", columns);
+  }, [columns]); // Dependency array ensures this runs when `columns` changes
+
   return (
-    <div className=" flex min-h-screen w-full p-4 overflow-x-auto overflow-y-hidden ">
+    <div className="flex min-h-screen w-full p-4 overflow-x-auto overflow-y-hidden">
       <DndContext
         sensors={sensors}
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
         onDragOver={onDragOver}
       >
-        <div className="flex w-full  ">
+        <div className="flex w-full">
           <div className="flex gap-2 w-full justify-between">
             {columns.map((column) => (
               <ColumnContainer
@@ -283,7 +296,7 @@ function KanbanBoard() {
           </div>
         </div>
 
-        {createPortal(
+        {isClient && createPortal(
           <DragOverlay>
             {activeTask && (
               <TaskCard

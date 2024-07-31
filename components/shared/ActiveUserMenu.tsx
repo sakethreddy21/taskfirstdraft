@@ -1,6 +1,6 @@
 import { BellDot, ChevronsRight } from 'lucide-react';
 import { useDispatch } from 'react-redux';
-import { appActions } from '@/app/store/app-slice';
+import { appActions } from '@/store/app-slice';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useRouter } from 'next/navigation';
 import { SunMedium } from 'lucide-react';

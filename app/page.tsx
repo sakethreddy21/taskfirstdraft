@@ -1,5 +1,5 @@
 'use client';
-import { IStoreState } from '@/app/store/store';
+import { IStoreState } from '@/store/store';
 import { Loader } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';

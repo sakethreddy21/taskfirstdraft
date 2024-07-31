@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
-import type { IStoreState } from '../app/store/store';
+import type { IStoreState } from '@/store/store';
 
 type request = {
   method?: 'get' | 'put' | 'post' | 'delete';

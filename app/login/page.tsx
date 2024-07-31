@@ -1,6 +1,4 @@
 'use client';
-
-import { appActions } from '@/app/store/app-slice';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';

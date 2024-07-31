@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
 import { toast } from 'sonner';
-import { appActions } from  '@/app/store/app-slice';
+import { appActions } from  '@/store/app-slice';
 import { z } from 'zod';
 const useLogin = () => {
   const [loading, setLoading] = useState(false);

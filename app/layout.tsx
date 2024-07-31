@@ -1,5 +1,5 @@
 import { Toaster } from '@/components/ui/sonner';
-import Providers from '@/app/store/redux-provider';
+import Providers from '@/store/redux-provider';
 import './globals.css';
 
 

@@ -2,7 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 import useAuthorizedHttp from '@/hooks/use-authorized-http';
 import { useDispatch } from 'react-redux';
-import { appActions } from '@/app/store/app-slice';
+import { appActions } from '@/store/app-slice';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { UserType } from '@/types/index';
