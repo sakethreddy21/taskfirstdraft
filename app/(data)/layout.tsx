@@ -3,7 +3,7 @@
 import SideBar from '@/components/shared/SideBar';
 import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
-import { IStoreState } from '../store/store';
+import { IStoreState } from '@/store/store';
 
 interface CoreLayoutProps {
   children: React.ReactNode;

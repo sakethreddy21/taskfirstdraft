@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useDebounce from '@/hooks/useDebounce';
 import { Button } from '@/components/ui/button';
-import { IStoreState } from '../store/store';
+import { IStoreState } from '@/store/store';
 import Link from 'next/link';
 import useLogin from '@/hooks/useLogin';
 
