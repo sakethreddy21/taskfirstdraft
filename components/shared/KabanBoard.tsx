@@ -88,7 +88,7 @@ const initialTasks: Task[] = [
   },
   {
     id: 8,
-    columnId: 4,
+    columnId: 3,
     content: "Prepare Release Notes",
     description: "Draft and publish release notes for the new version.",
     status: "Medium",
@@ -120,10 +120,10 @@ function KanbanBoard() {
   }
 
   // Update column
-  function updateColumn(id: Id, title: string) {
+  function updateColumn(id: Id, columnId: number, title: string , Priority: string, status: string, deadline: string) {
     const newColumns = columns.map((col) => {
       if (col.id !== id) return col;
-      return { ...col, title: title };
+      return { ...col, title: title , columnId: columnId , Priority: Priority, status: status, deadline: deadline };
     });
 
     setColumns(newColumns);
@@ -151,12 +151,12 @@ function KanbanBoard() {
   }
 
   // Update Task
-  function updateTask(id: Id, content: string) {
+  function updateTask(id: Id, content: string, description: string, status: string, deadline: string, timepassed: string) {
     const newTasks = tasks.map((task) => {
       if (task.id !== id) return task;
-      return { ...task, content };
+      return { ...task, content, description, status, deadline, timepassed };
     });
-
+  
     setTasks(newTasks);
   }
 
@@ -168,48 +168,35 @@ function KanbanBoard() {
 
   function onDragEnd(event: DragEndEvent) {
     setActiveTask(null);
-
+  
     const { active, over } = event;
-
+  
     if (!over) return;
-
+  
     const activeId = active.id;
     const overId = over.id;
-
-    if (activeId === overId) return;
-
     const isActiveTask = active.data.current?.type === "Task";
     const isOverTask = over.data.current?.type === "Task";
-
+    const isOverColumn = over.data.current?.type === "Column";
+  
     if (!isActiveTask) return;
-
-    // Dropping task over another task
-    if (isOverTask) {
+  
+    if (isOverTask || isOverColumn) {
       setTasks((tasks) => {
         const activeIndex = tasks.findIndex((t) => t.id === activeId);
-        const overIndex = tasks.findIndex((t) => t.id === overId);
-
-        // Update column id of the active task while moving it to another column
-        tasks[activeIndex].columnId = tasks[overIndex].columnId;
-
+        const overIndex = isOverTask ? tasks.findIndex((t) => t.id === overId) : activeIndex;
+  
+        if (isOverColumn) {
+          tasks[activeIndex].columnId = overId;
+        } else if (isOverTask) {
+          tasks[activeIndex].columnId = tasks[overIndex].columnId;
+        }
+  
         return arrayMove(tasks, activeIndex, overIndex);
       });
-    } else {
-      // Dropping task over a column
-      const isOverAColumn = over.data.current?.type === "Column";
-
-      if (isOverAColumn) {
-        setTasks((tasks) => {
-          const activeIndex = tasks.findIndex((t) => t.id === activeId);
-
-          // Update column id of the active task while moving it to another column
-          tasks[activeIndex].columnId = overId;
-
-          return arrayMove(tasks, activeIndex, activeIndex);
-        });
-      }
     }
   }
+  
 
   function onDragOver(event: DragOverEvent) {
     const { active, over } = event;
@@ -270,6 +257,13 @@ function KanbanBoard() {
   useEffect(() => {
     console.log("Columns updated:", columns);
   }, [columns]); // Dependency array ensures this runs when `columns` changes
+  const [openMode, setOpenMode] = useState(false);
+  const [currentTask, setCurrentTask] = useState<Task | null>();
+  const openTaskModal = (task: Task | null | undefined = null) => {
+    setCurrentTask(task);
+    setOpenMode(true);
+  };
+
 
   return (
     <div className="flex  w-full p-4 overflow-x-auto overflow-y-hidden">
@@ -300,6 +294,7 @@ function KanbanBoard() {
           <DragOverlay>
             {activeTask && (
               <TaskCard
+              onEdit={() => openTaskModal(activeTask ? activeTask : null)}
                 task={activeTask}
                 deleteTask={deleteTask}
                 updateTask={updateTask}
