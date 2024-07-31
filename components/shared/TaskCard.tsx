@@ -3,6 +3,7 @@ import TrashIcon from "../../icons/TrashIcon";
 import { Id, Task } from "../../types";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { Clock } from "lucide-react";
 
 interface Props {
   task: Task;
@@ -11,8 +12,20 @@ interface Props {
 }
 
 function TaskCard({ task, deleteTask, updateTask }: Props) {
-  const [mouseIsOver, setMouseIsOver] = useState(false);
   const [editMode, setEditMode] = useState(false);
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Urgent':
+        return '#FF6B6B';
+      case 'Medium':
+        return '#FFA235';
+      case 'Low':
+        return '#0ECC5A';
+      default:
+        return '#FFFFFF'; // Default color if status is not matched
+    }
+  };
 
   const {
     setNodeRef,
@@ -36,8 +49,7 @@ function TaskCard({ task, deleteTask, updateTask }: Props) {
   };
 
   const toggleEditMode = () => {
-    setEditMode((prev) => !prev);
-    setMouseIsOver(false);
+    setEditMode(prev => !prev);
   };
 
   if (isDragging) {
@@ -50,59 +62,47 @@ function TaskCard({ task, deleteTask, updateTask }: Props) {
     );
   }
 
-  if (editMode) {
-    return (
+  return (
+    <>
       <div
         ref={setNodeRef}
         style={style}
         {...attributes}
         {...listeners}
-        className="bg-mainBgColor p-2.5 h-[100px] min-h-[100px] items-center flex text-left rounded-xl hover:ring-2  hover:ring-inset hover:ring-rose-500 cursor-grab relative"
+        onClick={toggleEditMode}
+        className="bg-[#F9F9F9] shadow-sm rounded-lg w-[280px] border-[1px] border-[#DEDEDE] p-3 px-4 gap-y-2 mt-4 flex flex-col"
       >
-        <textarea
-          className="h-[90%] w-full resize-none border-none rounded bg-transparent text-white focus:outline-none"
-          value={task.content}
-          autoFocus
-          placeholder="Task content here"
-          onBlur={toggleEditMode}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && e.shiftKey) toggleEditMode();
-          }}
-          onChange={(e) => updateTask(task.id, e.target.value)}
-        ></textarea>
-      </div>
-    );
-  }
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-      onClick={toggleEditMode}
-      className="bg-mainBgColor p-2.5 h-[100px] min-h-[100px] items-center flex text-left rounded-xl hover:ring-2  hover:ring-inset hover:ring-rose-500 cursor-grab relative task"
-      onMouseEnter={() => {
-        setMouseIsOver(true);
-      }}
-      onMouseLeave={() => {
-        setMouseIsOver(false);
-      }}
-    >
-      <p className="my-auto h-[90%] w-full  overflow-y-auto overflow-x-hidden whitespace-pre-wrap">
-        {task.content}
-      </p>
-      {mouseIsOver && (
-        <button
-          onClick={() => {
-            deleteTask(task.id);
-          }}
-          className="absolute p-2 -translate-y-1/2 rounded stroke-white right-4 top-1/2 bg-columnBgColor opacity-60 hover:opacity-100"
-        >
-          <TrashIcon />
+        <div className='text-[16px] max-w-[200.75px] font-medium text-[#606060]'>{task.content}</div>
+        <div className='text-[14px] font-normal max-w-[220.75px] text-[#797979]'>{task.description}</div>
+        <button className='text-white text-[12px] font-normal w-[55px] h-[30px] rounded-lg' style={{ backgroundColor: getStatusColor(task.status) }}>
+          {task.status}
         </button>
-      )}
-    </div>
+        <div className='flex flex-row gap-x-2 items-center'>
+          <Clock color='#606060'/>
+          <div className='text-[#606060] text-[14px]'>
+            {task.deadline}
+          </div>
+        </div>
+        <div className='mt-2 text-[#606060] text-[14px]'>
+          {task.timepassed}
+        </div>
+      </div>
+
+      {/* Sliding Edit Form */}
+      <div
+        className={`fixed top-0 right-0 h-full w-[400px] bg-white z-50 transition-transform duration-300 ease-in-out ${editMode ? 'translate-x-0' : 'translate-x-[400px]'}`}
+      >
+        <button onClick={toggleEditMode} className="p-2 text-blue-500">Close</button>
+        {/* Add your edit form content here */}
+        <form>
+          {/* Form fields */}
+          <input type="text" defaultValue={task.content} className="block p-2 mb-4 w-full border" />
+          <textarea defaultValue={task.description} className="block p-2 mb-4 w-full border" />
+          {/* Add more form fields as needed */}
+          <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
+        </form>
+      </div>
+    </>
   );
 }
 

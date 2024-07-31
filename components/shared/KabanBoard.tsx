@@ -46,7 +46,7 @@ const initialTasks: Task[] = [
     columnId: 2,
     content: "Setup CI/CD Pipeline",
     description: "Implement continuous integration and delivery pipeline.",
-    status: "High",
+    status: "Urgent",
     deadline: "2024-08-10",
     timepassed: "3 hours ago",
   },
@@ -82,7 +82,7 @@ const initialTasks: Task[] = [
     columnId: 4,
     content: "Deploy to Production",
     description: "Deploy the latest release to the production environment.",
-    status: "High",
+    status: "Urgent",
     deadline: "2024-08-25",
     timepassed: "7 hours ago",
   },
@@ -272,7 +272,7 @@ function KanbanBoard() {
   }, [columns]); // Dependency array ensures this runs when `columns` changes
 
   return (
-    <div className="flex min-h-screen w-full p-4 overflow-x-auto overflow-y-hidden">
+    <div className="flex  w-full p-4 overflow-x-auto overflow-y-hidden">
       <DndContext
         sensors={sensors}
         onDragStart={onDragStart}
@@ -280,7 +280,7 @@ function KanbanBoard() {
         onDragOver={onDragOver}
       >
         <div className="flex w-full">
-          <div className="flex gap-2 w-full justify-between">
+          <div className="flex gap-x-2 w-full">
             {columns.map((column) => (
               <ColumnContainer
                 key={column.id}

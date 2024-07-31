@@ -4,8 +4,7 @@ import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import TaskCard from "./TaskCard";
 import TrashIcon from "../../icons/TrashIcon";
-
-import { Plus } from "lucide-react";
+import { Plus, Text } from "lucide-react";
 
 interface Props {
   column: Column;
@@ -21,13 +20,12 @@ function ColumnContainer(props: Props) {
   const {
     column,
     deleteColumn,
-    updateColumn,
     createTask,
     tasks,
     deleteTask,
     updateTask,
   } = props;
-  const [editMode, setEditMode] = useState(false);
+  
   const tasksIds = useMemo(() => tasks.map((task) => task.id), [tasks]);
 
   const {
@@ -43,7 +41,7 @@ function ColumnContainer(props: Props) {
       type: "Column",
       column,
     },
-    disabled: editMode,
+    disabled: false, // Edit mode is no longer needed
   });
 
   const style = {
@@ -56,7 +54,7 @@ function ColumnContainer(props: Props) {
       <div
         ref={setNodeRef}
         style={style}
-        className="bg-columnBgColor w-[260px] h-[500px] max-h-[500px] opacity-40 border-2 border-rose-500 rounded-md flex flex-col"
+        className=" w-[300px] opacity-40 border-2 border-rose-500 rounded-md flex flex-col"
       ></div>
     );
   }
@@ -65,49 +63,23 @@ function ColumnContainer(props: Props) {
     <div
       ref={setNodeRef}
       style={style}
-      className="bg-columnBgColor w-[260px] h-[500px] max-h-[500px] rounded-md flex flex-col"
+      className=" w-[300px] rounded-md flex flex-col"
     >
       {/* Column Title */}
       <div
         {...attributes}
         {...listeners}
-        onClick={() => {
-          setEditMode(true);
-        }}
-        className="bg-mainBgColor text-md h-[60px] cursor-grab rounded-md rounded-b-none p-3 font-bold border-columnBgColor border-4 flex items-center justify-between"
+        className="flex items-center px-2 justify-between"
       >
-        <div className="flex gap-2">
-          <div className="flex items-center justify-center px-2 py-1 text-sm rounded-full bg-columnBgColor">
-            0
-          </div>
-          {!editMode && column.title}
-          {editMode && (
-            <input
-              className="px-2 bg-black border rounded outline-none focus:border-rose-500"
-              value={column.title}
-              onChange={(e) => updateColumn(column.id, e.target.value)}
-              autoFocus
-              onBlur={() => {
-                setEditMode(false);
-              }}
-              onKeyDown={(e) => {
-                if (e.key !== "Enter") return;
-                setEditMode(false);
-              }}
-            />
-          )}
+        <div className="flex gap-2 text-[20px]">
+         
+          {column.title}
+         
         </div>
-        <button
-          onClick={() => {
-            deleteColumn(column.id);
-          }}
-          className="px-1 py-2 rounded stroke-gray-500 hover:stroke-white hover:bg-columnBgColor"
-        >
-          <TrashIcon />
-        </button>
+        <Text color='#555555'/>
       </div>
-      {/* Column taks container */}
-      <div className="flex flex-col flex-grow gap-4 p-2 overflow-x-hidden overflow-y-auto">
+      {/* Column tasks container */}
+      <div className="flex flex-col flex-grow gap-4 px-2 overflow-x-hidden overflow-y-auto">
         <SortableContext items={tasksIds}>
           {tasks.map((task) => (
             <TaskCard
